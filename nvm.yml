@@ -1,0 +1,19 @@
+---
+- name: ensures <home>/.nvm dir exists
+  file:
+    path: "{{ ansible_env.HOME }}/.nvm"
+    state: directory
+
+- name: NVM post install
+  blockinfile:
+    state: present
+    insertafter: EOF
+    dest: "{{ ansible_env.HOME }}/.profile"
+    marker: "## add services ANSIBLE MANAGED BLOCK <<"
+    content: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+      [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+- name: install lts node
+  command: sh -c "source ~/.profile; nvm install --lts; nvm use --lts"
